@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+        crossorigin="anonymous">
+</head>
+<style>
+    .head{
+        width: 500px;
+        display: inline-block;
+    }
+    .head1{
+        width: 100px;
+        display: inline-block;
+    }
+    #comment{
+        margin-left: 20px;
+    }
+    #user{
+        margin-left: 10px;
+    }
+    .link{
+        width: 100px;
+    }
+</style>
+
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="head">
+                <h2>Coding DoJo Wall</h2>
+            </div>
+            <div class="head">
+                <h3>Welcome <a class="link" href="/edit/{{each.id}}">{{each.first_name}}</a></h3>
+            </div>
+            <div class="head1">
+                <a class="nav-link active" href="/logout">Log Out</a>
+            </div>
+
+
+        </div>
+        <div class="card-body">
+            <form action="/post" method="POST">
+                {% csrf_token %}
+
+                <textarea class="form-control" name="message" aria-label="With textarea"></textarea>
+
+                <button type="submit" class="btn btn-primary">Post a message</button>
+
+            </form>
+
+
+            {% for message in messages %}
+           
+            
+            <div>
+                <p class="text-primary"><i><a class="link" href="/hello/{{message.users.id}}">{{message.users.first_name}} {{message.users.last_name}}</a></i>
+                    {{message.created_at}}</p>
+
+                <p>{{message.message}}</p>
+            </div>
+            {%if message.users.id == request.session.id%}
+            <a href="/delete/{{message.id}}">Delete</a>
+                {% endif %}
+            {% for comment in message.post_id.all %}
+            <div>
+                <p id="user"><a class="link" href="/hello/{{comment.user_id.id}}">{{comment.user_id.first_name}}</a> - {{comment.created_at}}:</p>
+                <p id="comment">{{comment.comment}}</p>
+                {% endfor %}
+                <form action="/post/comment" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name='hiddenmessageid' value="{{message.id}}">
+                    <textarea class="form-control" name='comment' aria-label="With textarea"></textarea>
+
+                    <button type="submit" class="btn btn-secondary">Post a comment</button>
+
+                </form>
+
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+
+</body>
+
+</html>
